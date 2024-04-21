@@ -1,0 +1,21 @@
+name: Repository Migration between GitHub organizations [GEI]
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  migrate:
+    if: contains(github.event.issue.labels.*.name, 'migration') &&
+        contains(github.event.issue.labels.*.name, 'gei') &&
+        !startsWith(github.event.comment.body, '/delete-repositories')
+    uses: ./.github/workflows/03.repository.migration.execution.yml
+    with:
+      TARGET_ORGANIZATION: ${{ vars.TARGET_ORGANIZATION }}
+    secrets:
+      TARGET_ADMIN_TOKEN: ${{ secrets.TARGET_ADMIN_TOKEN }}
+      SOURCE_ADMIN_TOKEN: ${{ secrets.SOURCE_ADMIN_TOKEN }}
