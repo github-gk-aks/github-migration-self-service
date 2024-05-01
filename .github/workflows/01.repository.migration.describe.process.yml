@@ -33,6 +33,10 @@ jobs:
         env:
           JSON_STRING: ${{ steps.parse-issue-body.outputs.jsonString }}
 
+      - run: echo "${REPO_STRING}"
+        env:
+          REPO_STRING: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+
       - name: Post prepare message
         uses: actions/github-script@v6
         with:
