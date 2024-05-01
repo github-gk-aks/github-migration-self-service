@@ -13,7 +13,7 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'migration') &&
         contains(github.event.issue.labels.*.name, 'gei') &&
         !startsWith(github.event.comment.body, '/delete-repositories')
-    uses: github-gk-aks/github-migration-self-service/.github/workflows/03.repository.migration.execution.yml
+    uses: ./.github/workflows/03.repository.migration.execution.yml
     with:
       TARGET_ORGANIZATION: ${{ vars.TARGET_ORGANIZATION }}
     secrets:
