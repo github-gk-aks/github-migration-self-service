@@ -181,7 +181,10 @@ jobs:
 
           $RepoMigrations = [ordered]@{}
           $RepoSources = $Env:REPOSITORIES.Split("`n")
+
           $TargetOrg = $Env:TARGET_ORGANIZATION.Split("`n")
+
+          Write-Host "$RepoSources"
 
           Write-Host "Target Organizations: $Env:TARGET_ORGANIZATION"
           Write-Host "$TargetOrg"
