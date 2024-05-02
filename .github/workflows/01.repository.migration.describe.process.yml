@@ -50,6 +50,7 @@ jobs:
             }
             let commentBody
             let repositories = process.env.REPOSITORIES.trim().split('\n').map(line => line.split(' ')[0]);
+            let target_organization = process.env.REPOSITORIES.trim().split('\n').map(line => line.split(' ')[1]);
             commentBody = `👋 Thank you for opening this migration issue.
             
             The following **${repositories.length} repositories** have been parsed from your issue body:
@@ -58,7 +59,12 @@ jobs:
             ${repositories.join('\n')}
             \`\`\`
 
-            The **target organization** is set to be: **\`${ process.env.TARGET_ORG }\`**
+            The  following **target organization** have been parsed form your issue body:
+            
+            \`\`\`
+            ${target_organization.join('\n')}
+            \`\`\`
+
             The **target repository visibility** is set to be: **\`${ visibility }\`**
 
             <details>
