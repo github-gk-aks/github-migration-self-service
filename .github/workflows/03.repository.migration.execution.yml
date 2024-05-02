@@ -243,7 +243,7 @@ jobs:
           GH_PAT: ${{ secrets.TARGET_ADMIN_TOKEN }}
           GH_SOURCE_PAT: ${{ secrets.SOURCE_ADMIN_TOKEN }}
           REPOSITORIES: ${{ matrix.repository }}
-          TARGET_ORGANIZATION: ${{ fromJson(needs.prepare.outputs.target_organization) }}
+          TARGET_ORGANIZATION: ${{ needs.prepare.outputs.target_organization }}
           VISIBILITY: ${{ fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility }}
 
       # - name: Generate user mapping file
