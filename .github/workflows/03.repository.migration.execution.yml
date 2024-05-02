@@ -212,7 +212,7 @@ jobs:
                   --source-repo $RepoName                                 `
                   --target-repo $RepoName                                 `
                   --github-source-org $RepoOrg                            `
-                  --github-target-org $TargetOrg
+                  --github-target-org $TargetOrg                          `
                   --target-repo-visibility $VisibilityValue               `
                   $ServerIncludeArg $ServerIncludeValue                   `
                   ${{ steps.lock-flag.outputs.result }}                   `
