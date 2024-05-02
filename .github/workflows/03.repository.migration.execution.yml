@@ -184,6 +184,7 @@ jobs:
           $TargetOrg = $Env:TARGET_ORGANIZATION.Split("`n")
 
           Write-Host "Target Organizations: $Env:TARGET_ORGANIZATION"
+          Write-Host "$TargetOrg"
 
           # Create a dictionary to map repositories to target organizations
           $RepoToOrgMap = @{}
