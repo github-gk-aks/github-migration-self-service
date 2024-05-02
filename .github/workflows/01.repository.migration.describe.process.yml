@@ -49,9 +49,9 @@ jobs:
               visibility = process.env.VISIBILITY
             }
             let commentBody
-            commentBody = `👋 Thank you for opening this migration issue.
             let repositories = process.env.REPOSITORIES.trim().split('\n').map(line => line.split(' ')[0]);
-
+            commentBody = `👋 Thank you for opening this migration issue.
+            
             The following **${repositories.length} repositories** have been parsed from your issue body:
 
             \`\`\`
