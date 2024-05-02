@@ -189,7 +189,7 @@ jobs:
           $RepoToOrgMap = @{}
           for ($i=0; $i -lt $RepoSources.Length; $i++) {
               $RepoName = $RepoSources[$i].Split("/")[-1]
-              $RepoToOrgMap[$RepoName] = $TargetOrgs[$i]
+              $RepoToOrgMap[$RepoName] = $TargetOrg[$i]
           }
 
           foreach ($Repo in $RepoSources) {
