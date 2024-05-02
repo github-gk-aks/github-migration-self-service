@@ -246,42 +246,42 @@ jobs:
           TARGET_ORGANIZATION: ${{ fromJson(needs.prepare.outputs.target_organization) }}
           VISIBILITY: ${{ fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility }}
 
-      - name: Generate user mapping file
-        if: ${{ contains(github.event.comment.body, 'dry-run') }}
-        run: |
-          gei generate-mannequin-csv                            \
-          --output user-mappings-template.csv                   \
-          --github-target-org ${{ inputs.TARGET_ORGANIZATION }} \
-          --github-target-pat ${{ secrets.TARGET_ADMIN_TOKEN }}
+      # - name: Generate user mapping file
+      #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
+      #   run: |
+      #     gei generate-mannequin-csv                            \
+      #     --output user-mappings-template.csv                   \
+      #     --github-target-org ${{ inputs.TARGET_ORGANIZATION }} \
+      #     --github-target-pat ${{ secrets.TARGET_ADMIN_TOKEN }}
 
-      - name: Upload user mapping file to artifacts
-        if: ${{ contains(github.event.comment.body, 'dry-run') }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: user-mappings-template.csv
-          path: ./user-mappings-template.csv
-          if-no-files-found: error
-          retention-days: 30
+      # - name: Upload user mapping file to artifacts
+      #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: user-mappings-template.csv
+      #     path: ./user-mappings-template.csv
+      #     if-no-files-found: error
+      #     retention-days: 30
 
       # TODO: if you can, automatically map the mannequins to the correct users
 
-      - name: Reclaim mannequins
-        run: |
-          gei reclaim-mannequin \
-            --csv user-mappings-gei.csv \
-            --github-target-org ${{ inputs.TARGET_ORGANIZATION }} \
-            --github-target-pat ${{ secrets.TARGET_ADMIN_TOKEN }}
+      # - name: Reclaim mannequins
+      #   run: |
+      #     gei reclaim-mannequin \
+      #       --csv user-mappings-gei.csv \
+      #       --github-target-org ${{ inputs.TARGET_ORGANIZATION }} \
+      #       --github-target-pat ${{ secrets.TARGET_ADMIN_TOKEN }}
 
-      - name: Set target repo visibility
-        if: fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility == 'Mirror'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const organization = process.env.TARGET_ORGANIZATION;
-            await require('./.github/scripts/set-target-repos-visibility.js')({organization});
-        env:
-          TARGET_ADMIN_TOKEN: ${{ secrets.TARGET_ADMIN_TOKEN }}
-          TARGET_ORGANIZATION: ${{ inputs.TARGET_ORGANIZATION }}
+      # - name: Set target repo visibility
+      #   if: fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility == 'Mirror'
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       const organization = process.env.TARGET_ORGANIZATION;
+      #       await require('./.github/scripts/set-target-repos-visibility.js')({organization});
+      #   env:
+      #     TARGET_ADMIN_TOKEN: ${{ secrets.TARGET_ADMIN_TOKEN }}
+      #     TARGET_ORGANIZATION: ${{ inputs.TARGET_ORGANIZATION }}
 
       - name: Write repo migration status
         if: always()
