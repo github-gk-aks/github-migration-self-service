@@ -181,14 +181,18 @@ jobs:
           $RepoMigrations = [ordered]@{}
           $RepoSources = $Env:REPOSITORIES.Split("`n")
 
-          $RepoRep = $Env:REPO_REP -split ","
-          $RepoTorg = $Env:REPO_TORG -split ","
+          let REPO_TORG = process.env.REPO_TORG.replace(/[\[\]"]+/g,'').split(",");
+          let REPO_REP = process.env.REPO_REP.replace(/[\[\]"]+/g,'').split(",");
 
-          $RepoDictionary = @{}
-          for ($i=0; $i -lt $RepoRep.Length; $i++) {
-            $RepoDictionary[$RepoRep[$i].Split("/")[-1]] = $RepoTorg[$i]
+          let repoDictionary = new Map();
+
+          for(let i = 0; i < REPO_REP.length; i++) {
+              repoDictionary.set(REPO_REP[i], REPO_TORG[i]);
           }
 
+          Write-Host "The value of New Repo_Torg is : $REPO_TORG"
+          Write-Host "The value of New Repo_rep is : $REPO_REP"
+          
           foreach ($Repo in $RepoSources) {
               $Repo = $Repo.Trim()
               Write-Host "Repo: $Repo"
@@ -203,16 +207,12 @@ jobs:
                   $ServerIncludeValue = "https://$($RepoHost)/api/v3"
               }
               
-              $TargetOrg = $RepoDictionary[$RepoName]
-              Write-Host "Repo: $TargetOrg"
-
               $MigrationID = ExecAndGetMigrationID {
-                  $TargetOrg = $RepoDictionary[$RepoName]
                   gei migrate-repo                                        `
                   --source-repo $RepoName                                 `
                   --target-repo $RepoName                                 `
                   --github-source-org $RepoOrg                            `
-                  --github-target-org $TargetOrg                          `
+                  --github-target-org                           `
                   --target-repo-visibility $VisibilityValue               `
                   $ServerIncludeArg $ServerIncludeValue                   `
                   ${{ steps.lock-flag.outputs.result }}                   `
