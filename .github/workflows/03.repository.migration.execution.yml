@@ -179,22 +179,10 @@ jobs:
               $VisibilityValue = $Env:VISIBILITY.ToLower()
           }
 
+          Write-Host "The value of REPO_TORG is: $Env:REPO_TORG"
+
           $RepoMigrations = [ordered]@{}
           $RepoSources = $Env:REPOSITORIES.Split("`n")
-
-          $TargetOrg = $Env:TARGET_ORGANIZATION.Split("`n")
-
-          Write-Host "$RepoSources"
-
-          Write-Host "Target Organizations: $Env:TARGET_ORGANIZATION"
-          Write-Host "$TargetOrg"
-
-          # Create a dictionary to map repositories to target organizations
-          $RepoToOrgMap = @{}
-          for ($i=0; $i -lt $RepoSources.Length; $i++) {
-              $RepoName = $RepoSources[$i].Split("/")[-1]
-              $RepoToOrgMap[$RepoName] = $TargetOrg[$i]
-          }
 
           foreach ($Repo in $RepoSources) {
               $Repo = $Repo.Trim()
@@ -210,15 +198,12 @@ jobs:
                   $ServerIncludeValue = "https://$($RepoHost)/api/v3"
               }
 
-              # Get the target organization for the current repository from the map
-              $TargetOrg = $RepoToOrgMap[$RepoName]
-
               $MigrationID = ExecAndGetMigrationID {
                   gei migrate-repo                                        `
                   --source-repo $RepoName                                 `
                   --target-repo $RepoName                                 `
                   --github-source-org $RepoOrg                            `
-                  --github-target-org $TargetOrg                          `
+                  --github-target-org                           `
                   --target-repo-visibility $VisibilityValue               `
                   $ServerIncludeArg $ServerIncludeValue                   `
                   ${{ steps.lock-flag.outputs.result }}                   `
@@ -249,8 +234,8 @@ jobs:
           GH_PAT: ${{ secrets.TARGET_ADMIN_TOKEN }}
           GH_SOURCE_PAT: ${{ secrets.SOURCE_ADMIN_TOKEN }}
           REPOSITORIES: ${{ matrix.repository }}
-          TARGET_ORGANIZATION: ${{ needs.prepare.outputs.target_organization }}
           VISIBILITY: ${{ fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility }}
+          REPO_TORG: ${{ fromJson(needs.prepare.outputs.parsed-issue).issueparser_repositories }}
 
       # - name: Generate user mapping file
       #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
