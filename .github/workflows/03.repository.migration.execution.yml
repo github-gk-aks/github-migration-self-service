@@ -186,6 +186,14 @@ jobs:
           $RepoMigrations = [ordered]@{}
           $RepoSources = $Env:REPOSITORIES.Split("`n")
 
+          $RepoRep = $Env:REPO_REP -split ","
+          $RepoTorg = $Env:REPO_TORG -split ","
+
+          $RepoDictionary = @{}
+          for ($i=0; $i -lt $RepoRep.Length; $i++) {
+            $RepoDictionary[$RepoRep[$i].Split("/")[-1]] = $RepoTorg[$i]
+          }
+
           foreach ($Repo in $RepoSources) {
               $Repo = $Repo.Trim()
               Write-Host "Repo: $Repo"
@@ -201,11 +209,12 @@ jobs:
               }
 
               $MigrationID = ExecAndGetMigrationID {
+                  $TargetOrg = $RepoDictionary[$RepoName]
                   gei migrate-repo                                        `
                   --source-repo $RepoName                                 `
                   --target-repo $RepoName                                 `
                   --github-source-org $RepoOrg                            `
-                  --github-target-org                           `
+                  --github-target-org $TargetOrg                          `
                   --target-repo-visibility $VisibilityValue               `
                   $ServerIncludeArg $ServerIncludeValue                   `
                   ${{ steps.lock-flag.outputs.result }}                   `
