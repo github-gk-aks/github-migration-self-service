@@ -181,17 +181,19 @@ jobs:
           $RepoMigrations = [ordered]@{}
           $RepoSources = $Env:REPOSITORIES.Split("`n")
 
-          let REPO_TORG = process.env.REPO_TORG.replace(/[\[\]"]+/g,'').split(",");
-          let REPO_REP = process.env.REPO_REP.replace(/[\[\]"]+/g,'').split(",");
-
-          let repoDictionary = new Map();
-
-          for(let i = 0; i < REPO_REP.length; i++) {
-              repoDictionary.set(REPO_REP[i], REPO_TORG[i]);
+          $REPO_TORG = $Env:REPO_TORG -replace '[\[\]"]', '' -split ','
+          $REPO_REP = $Env:REPO_REP -replace '[\[\]"]', '' -split ','
+         
+          # Create an empty hashtable
+          $repoDictionary = @{}
+          
+          # Populate the hashtable
+          for ($i = 0; $i -lt $REPO_REP.Length; $i++) {
+            $repoDictionary[$REPO_REP[$i]] = $REPO_TORG[$i]
           }
 
-          Write-Host "The value of New Repo_Torg is : $REPO_TORG"
-          Write-Host "The value of New Repo_rep is : $REPO_REP"
+          # Print the hashtable
+          $repoDictionary
           
           foreach ($Repo in $RepoSources) {
               $Repo = $Repo.Trim()
