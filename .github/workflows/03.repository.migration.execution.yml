@@ -179,6 +179,7 @@ jobs:
               $VisibilityValue = $Env:VISIBILITY.ToLower()
           }
 
+          Write-Host "The value of Visibilityis : $Env:VISIBILITY"
           Write-Host "The value of REPO_TORG is: $Env:REPO_TORG"
 
           $RepoMigrations = [ordered]@{}
