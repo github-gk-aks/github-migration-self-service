@@ -236,7 +236,7 @@ jobs:
           GH_SOURCE_PAT: ${{ secrets.SOURCE_ADMIN_TOKEN }}
           REPOSITORIES: ${{ matrix.repository }}
           VISIBILITY: ${{ fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility }}
-          REPO_TORG: ${{ fromJson(needs.prepare.outputs.parsed-issue).issueparser_repositories }}
+          REPO_TORG: ${{ fromJson(needs.prepare.outputs.parsed-issue-repo-target_org) }}
 
       # - name: Generate user mapping file
       #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
