@@ -204,6 +204,11 @@ jobs:
               $RepoOrg = $Parts[$Parts.length -2]
               $RepoHost = $Parts[2]
 
+              # Lookup target organization from the dictionary
+              $TargetOrg = $repoDictionary[$Repo]
+
+              Write-Host "Target Organization Value is: $TargetOrg"
+
               if ($RepoHost -ne 'github.com') {
                   $ServerIncludeArg = "--ghes-api-url"
                   $ServerIncludeValue = "https://$($RepoHost)/api/v3"
@@ -214,7 +219,7 @@ jobs:
                   --source-repo $RepoName                                 `
                   --target-repo $RepoName                                 `
                   --github-source-org $RepoOrg                            `
-                  --github-target-org                           `
+                  --github-target-org $TargetOrg                          `
                   --target-repo-visibility $VisibilityValue               `
                   $ServerIncludeArg $ServerIncludeValue                   `
                   ${{ steps.lock-flag.outputs.result }}                   `
