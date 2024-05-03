@@ -202,6 +202,9 @@ jobs:
                   $ServerIncludeArg = "--ghes-api-url"
                   $ServerIncludeValue = "https://$($RepoHost)/api/v3"
               }
+              
+              $TargetOrg = $RepoDictionary[$RepoName]
+              Write-Host "Repo: $TargetOrg"
 
               $MigrationID = ExecAndGetMigrationID {
                   $TargetOrg = $RepoDictionary[$RepoName]
