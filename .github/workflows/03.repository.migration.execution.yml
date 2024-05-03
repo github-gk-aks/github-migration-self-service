@@ -181,6 +181,7 @@ jobs:
 
           Write-Host "The value of Visibilityis : $Env:VISIBILITY"
           Write-Host "The value of REPO_TORG is: $Env:REPO_TORG"
+          Write-Host "The value of REPO_REP is: $Env:REPO_REP"
 
           $RepoMigrations = [ordered]@{}
           $RepoSources = $Env:REPOSITORIES.Split("`n")
@@ -237,6 +238,7 @@ jobs:
           REPOSITORIES: ${{ matrix.repository }}
           VISIBILITY: ${{ fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility }}
           REPO_TORG: ${{ needs.prepare.outputs.target_organization }}
+          REPO_REP: ${{ needs.prepare.outputs.repositories }}
 
       # - name: Generate user mapping file
       #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
