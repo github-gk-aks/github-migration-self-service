@@ -174,7 +174,7 @@ jobs:
         
           $VisibilityValue = $Env:VISIBILITY.ToLower()
        
-          Write-Host "The value of Visibility is : $Env:VISIBILITY"
+          Write-Host "The value of Visibility is : $VisibilityValue"
           Write-Host "The value of REPO_TORG is: $Env:REPO_TORG"
           Write-Host "The value of REPO_REP is: $Env:REPO_REP"
 
