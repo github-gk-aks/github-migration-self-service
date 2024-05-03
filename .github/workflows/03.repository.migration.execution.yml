@@ -171,15 +171,10 @@ jobs:
               } | Select-String -Pattern "\(ID: (.+)\)" | ForEach-Object { $_.matches.groups[1] }
               return $MigrationID
           }
-
-          if ($Env:VISIBILITY -eq 'None') {
-              $VisibilityValue = 'private'
-          }
-          else {
-              $VisibilityValue = $Env:VISIBILITY.ToLower()
-          }
-
-          Write-Host "The value of Visibilityis : $Env:VISIBILITY"
+        
+          $VisibilityValue = $Env:VISIBILITY.ToLower()
+       
+          Write-Host "The value of Visibility is : $Env:VISIBILITY"
           Write-Host "The value of REPO_TORG is: $Env:REPO_TORG"
           Write-Host "The value of REPO_REP is: $Env:REPO_REP"
 
