@@ -31,6 +31,10 @@ jobs:
         env:
           JSON_STRING: ${{ steps.parse-issue-body.outputs.jsonString }}
 
+      - run: echo "$REPOSITORIES"
+        env:
+          REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+
       - name: Delete repositories
         id: delete-repos
         uses: actions/github-script@v7
