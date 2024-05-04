@@ -55,7 +55,7 @@ jobs:
             let target_organization = process.env.REPOSITORIES.trim().split('\n').map(line => line.split(' ')[1].trim());
 
             // Create an array of repository and target organization pairs
-            let repo_org_pairs = repositories.map((repo, index) => `${repo} repository will be migrated to ${target_organization[index]} target organization`);
+            let repo_org_pairs = repositories.map((repo, index) => `Repository ${repo} repository will be migrated to the ${target_organization[index]} target organization`);
 
             commentBody = `👋 Thank you for opening this migration issue.
             
@@ -73,7 +73,7 @@ jobs:
 
             The **target repository visibility** is set to be: **\`${ visibility }\`**
 
-            The following repositories will be migrated to the respective target organization:
+            The following repositories are scheduled for migration to their respective target organizations
 
               \`\`\`
               ${repo_org_pairs.join('\n')}
