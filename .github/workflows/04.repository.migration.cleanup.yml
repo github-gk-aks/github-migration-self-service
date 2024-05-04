@@ -37,6 +37,7 @@ jobs:
         with:
           github-token: ${{ secrets.TARGET_ADMIN_TOKEN }}
           script: |
+            const repoOrgMapping = {};
             const repositories = process.env.REPOSITORIES.split('\n');
             const labels = process.env.LABELS;
             let isfailed = false;
