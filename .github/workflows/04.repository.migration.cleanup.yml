@@ -37,20 +37,13 @@ jobs:
         with:
           github-token: ${{ secrets.TARGET_ADMIN_TOKEN }}
           script: |
-            const repoOrgMapping = {};
             const repositories = process.env.REPOSITORIES.split('\n');
             const labels = process.env.LABELS;
             let isfailed = false;
 
-            // Create a mapping of repository to organization
-            repositories.forEach((repoOrg) => {
-              let [repo, org] = repoOrg.split(' ');
-              repoOrgMapping[repo.split('/').pop().replace(/\r$/, '')] = org;
-            });
-
-
             await Promise.all(repositories.map(async (sourceRepo) => {
               if (sourceRepo) {
+                let [repoUrl, targetOrg] = sourceRepo.split(' ');
                 // if BitBucket, need to properly format the repo name
                 const hasGEIBitbucketLabel = labels.includes('gei-bitbucket');
                 let repoName;
@@ -61,14 +54,14 @@ jobs:
                   repoName = sourceRepo.split('/').pop().replace(/\r$/, '');
                 }
 
-                core.info(`Deleting ${repoOrgMapping[repoName]}/${repoName}`);
+                core.info(`Deleting ${targetOrg}/${repoName}`);
                 try {
                   await github.rest.repos.delete({
-                    owner: repoOrgMapping[repoName],
+                    owner: targetOrg,
                     repo: repoName,
                   });
                 } catch (error) {
-                  core.error(`Failed to delete ${repoOrgMapping[repoName]}/${repoName}: ${error.message}`);
+                  core.error(`Failed to delete ${targetOrg}/${repoName}: ${error.message}`);
                   isfailed = true;
                 }
               }
