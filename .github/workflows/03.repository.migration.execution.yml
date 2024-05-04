@@ -21,8 +21,7 @@ jobs:
       target_organization: ${{ steps.json.outputs.target_organization }}
       migration-type: ${{ steps.migration-type.outputs.result }}
       parsed-issue: ${{ steps.parse-issue-body.outputs.jsonString }}
-      parsed-issue-repo-target_org: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
-
+     
     if: github.event_name == 'issue_comment' &&
       (contains(github.event.comment.body, '/run-dry-run-migration') ||
       contains(github.event.comment.body, '/run-production-migration'))
@@ -229,6 +228,7 @@ jobs:
               if (!$null -eq $MigrationID) {
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
+                  echo "::set-output name=migration-id::$MigrationID" 
               }
           }
 
@@ -296,8 +296,9 @@ jobs:
         id: write-status
         run: |
           reponame="$(basename "${{ matrix.repository }}")"
+          migrationid="${{ steps.migrate.outputs.migration-id }}"
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
-          echo "${{ matrix.repository }}, ${{ job.status }}" > ${reponame}.txt
+          echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${reponame}.txt
 
       - name: Upload repo migration status
         uses: actions/upload-artifact@v3
