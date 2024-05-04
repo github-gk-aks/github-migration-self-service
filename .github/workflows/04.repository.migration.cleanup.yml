@@ -48,6 +48,7 @@ jobs:
             await Promise.all(repositories.map(async (sourceRepo) => {
               if (sourceRepo) {
                 let [repoUrl, targetOrg] = sourceRepo.split(' ');
+                targetOrg = targetOrg.trim();
                 // if BitBucket, need to properly format the repo name
                 const hasGEIBitbucketLabel = labels.includes('gei-bitbucket');
                 let repoName;
