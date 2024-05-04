@@ -51,7 +51,7 @@ jobs:
                   let repoParts = sourceRepo.split(',').map(part => part.trim());
                   repoName = repoParts.join('-');
                 } else { // Azure DevOps or GitHub
-                  repoName = sourceRepo.split('/').pop().replace(/\r$/, '');
+                  repoName = repoUrl.split('/').pop().replace(/\r$/, '');
                 }
 
                 core.info(`Deleting ${targetOrg}/${repoName}`);
