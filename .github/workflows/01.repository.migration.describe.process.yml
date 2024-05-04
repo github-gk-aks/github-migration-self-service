@@ -58,7 +58,7 @@ jobs:
             let repo_names = repositories.map(repo => repo.split('/').pop().replace(/\r$/, ''));
 
             // Create an array of repository and target organization pairs
-            let repo_org_pairs = repo_names.map((repo, index) => `Repository ${repo} repository will be migrated to the ${target_organization[index]} target organization`);
+            let repo_org_pairs = repo_names.map((repo, index) => `Repository ${repo} will be migrated to the ${target_organization[index]} target organization`);
 
             commentBody = `👋 Thank you for opening this migration issue.
             
