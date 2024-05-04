@@ -61,7 +61,6 @@ jobs:
                   repoName = sourceRepo.split('/').pop().replace(/\r$/, '');
                 }
 
-                core.info(`Deleting ${process.env.ORGANIZATION}/${repoName}`);
                 core.info(`Deleting ${repoOrgMapping[repoName]}/${repoName}`);
                 try {
                   await github.rest.repos.delete({
