@@ -391,7 +391,7 @@ jobs:
               body
             })
 
-      - name: Add delete repositories comment
+      - name: Add delete or unarchive repositories comment
         uses: actions/github-script@v6
         with:
           script: |
@@ -408,6 +408,23 @@ jobs:
               // remove leading whitespace
               body = body.replace(/  +/g, '')
 
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              })
+            } else if (migrationType === 'Production') {
+              let body = `In order to unarchive the migrated repositories of the production run, add a comment with the following slash command:
+            
+              \`\`\`
+              /unarchive-repositories
+              \`\`\`
+              `
+            
+              // remove leading whitespace
+              body = body.replace(/  +/g, '')
+            
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,

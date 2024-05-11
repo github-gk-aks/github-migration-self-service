@@ -1,0 +1,105 @@
+name: Migration (Unarchive repositories) [GEI]
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  unarchive-repositories:
+    name: Unarchive repositories
+    runs-on: ubuntu-latest
+    container: 
+      image: ghcr.io/actions/actions-runner:latest
+
+    if: github.event_name == 'issue_comment' &&
+      contains(github.event.issue.labels.*.name, 'gei') &&
+      startsWith(github.event.comment.body, '/unarchive-repositories')
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Parse issue body
+        id: parse-issue-body
+        uses: stefanbuck/github-issue-parser@v3
+
+      - run: echo $JSON_STRING
+        env:
+          JSON_STRING: ${{ steps.parse-issue-body.outputs.jsonString }}
+
+      - run: echo "$REPOSITORIES"
+        env:
+          REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+
+      - name: Unarchive repositories
+        id: unarchive-repos
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TARGET_ADMIN_TOKEN }}
+          script: |
+            const repositories = process.env.REPOSITORIES.split('\n');
+            const labels = process.env.LABELS;
+            let isfailed = false;
+
+            await Promise.all(repositories.map(async (sourceRepo) => {
+              if (sourceRepo) {
+                let [repoUrl, targetOrg] = sourceRepo.split(' ');
+                targetOrg = targetOrg.trim();
+                // if BitBucket, need to properly format the repo name
+                const hasGEIBitbucketLabel = labels.includes('gei-bitbucket');
+                let repoName;
+                if (hasGEIBitbucketLabel) {
+                  let repoParts = sourceRepo.split(',').map(part => part.trim());
+                  repoName = repoParts.join('-');
+                } else { // Azure DevOps or GitHub
+                  repoName = repoUrl.split('/').pop().replace(/\r$/, '');
+                }
+
+                core.info(`Unarchiving ${targetOrg}/${repoName}`);
+                try {
+                  await github.rest.repos.update({
+                    owner: targetOrg,
+                    repo: repoName,
+                    archived: false
+                  });
+                } catch (error) {
+                  core.error(`Failed to unarchive ${targetOrg}/${repoName}: ${error.message}`);
+                  isfailed = true;
+                }
+              }
+            }));
+            if (isfailed) {
+              core.setFailed('Failed to unarchive one or more repositories');
+            }
+        env:
+          REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+          LABELS: ${{ toJSON(github.event.issue.labels.*.name) }}
+
+      - name: Update issue with failed unarchival
+        if: always() && steps.unarchive-repos.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `Failed to **unarchive** repositories post migration. [View workflow run for details](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })
+
+      - name: Update issue with running state
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `:wastebasket: **Unarchived** repositories post migration. [View workflow run for details](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\nTo run the production migration enter the following command:\n\`\`\`\n/run-production-migration\n\`\`\``
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })
