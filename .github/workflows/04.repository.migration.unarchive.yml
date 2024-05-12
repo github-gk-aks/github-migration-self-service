@@ -69,13 +69,13 @@ jobs:
                     archived: false
                   });
                   if (response.status == 200) {
-                    report += `${repoName} archival successful\n`;
+                    report += `${repoName} unarchival successful\n`;
                   } else {
-                    report += `${repoName} archival unsuccessful\n`;
+                    report += `${repoName} unarchival unsuccessful\n`;
                     isfailed = true;
                   }
                 } catch (error) {
-                  report += `${repoName} archival unsuccessful\n`;
+                  report += `${repoName} unarchival unsuccessful\n`;
                   core.error(`Failed to unarchive ${targetOrg}/${repoName}: ${error.message}`);
                   isfailed = true;
                 }
