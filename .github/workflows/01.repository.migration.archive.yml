@@ -101,7 +101,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = `:wastebasket: **Unarchived** repositories post migration. [View workflow run for details](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`
+            const body = `:wastebasket: **Archived** repositories post migration. [View workflow run for details](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
