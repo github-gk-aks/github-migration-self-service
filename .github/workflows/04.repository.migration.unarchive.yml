@@ -63,7 +63,7 @@ jobs:
 
                 core.info(`Unarchiving ${targetOrg}/${repoName}`);
                 try {
-                  await github.rest.repos.update({
+                  const response = await github.rest.repos.update({
                     owner: targetOrg,
                     repo: repoName,
                     archived: false
