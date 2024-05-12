@@ -32,7 +32,8 @@ jobs:
               'gei-org',
               'bitbucket',
               'bitbucket-ghes',
-              'gei-azure-devops'
+              'gei-azure-devops',
+              'archive'
             ];
 
             for (const label of labels) {
@@ -50,7 +51,7 @@ jobs:
           script: |
             let parts = process.env.GITHUB_WORKFLOW_REF.split("@")[0].split("/");
             let filename = parts.pop();
-
+            
             github.rest.actions.disableWorkflow({
               owner: context.repo.owner,
               repo: context.repo.repo,

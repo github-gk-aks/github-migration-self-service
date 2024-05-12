@@ -1,0 +1,109 @@
+name: Archive Source Repositories
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  prepare:
+    name: Prepare Repos Migration
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/actions/actions-runner:latest
+
+    if: github.event_name == 'issues' &&
+      (github.event.action == 'opened' || github.event.action == 'edited') &&
+      contains(github.event.issue.labels.*.name, 'archive') &&
+      !contains(github.event.issue.labels.*.name, 'gei-org')
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Parse issue body
+        id: parse-issue-body
+        uses: stefanbuck/github-issue-parser@v3
+
+      - run: echo $JSON_STRING
+        env:
+          JSON_STRING: ${{ steps.parse-issue-body.outputs.jsonString }}
+
+      - run: echo "$REPOSITORIES"
+        env:
+          REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+
+      - name: Archive repositories
+        id: archive-repos
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TARGET_ADMIN_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const repositories = process.env.REPOSITORIES.split('\n');
+            const labels = process.env.LABELS;
+            let isfailed = false;
+            let report = '';
+
+            await Promise.all(repositories.map(async (sourceRepo) => {
+              if (sourceRepo) {
+                let [sourceOrg, repoName] = sourceRepo.split('/');
+                repoName = repoName.trim();
+                
+                core.info(`Archiving ${sourceOrg}/${repoName}`);
+                try {
+                  const response = await github.rest.repos.update({
+                    owner: sourceOrg,
+                    repo: repoName,
+                    archived: true
+                  });
+                  if (response.status == 200) {
+                    report += `${repoName} archival successful\n`;
+                  } else {
+                    report += `${repoName} archival unsuccessful\n`;
+                    isfailed = true;
+                  }
+                } catch (error) {
+                  report += `${repoName} archival unsuccessful\n`;
+                  core.error(`Failed to archive ${sourceOrg}/${repoName}: ${error.message}`);
+                  isfailed = true;
+                }
+              }
+            }));
+            fs.writeFileSync('report_archival.txt', report);
+            if (isfailed) {
+              core.setFailed('Failed to archive one or more repositories');
+            }
+        env:
+          REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+          LABELS: ${{ toJSON(github.event.issue.labels.*.name) }}
+
+      - name: Upload Archival report
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: report_archival.txt
+
+      - name: Update issue with failed archival
+        if: always() && steps.unarchive-repos.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `Failed to **Archive** repositories post migration. [View workflow run for details](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })
+
+      - name: Update issue with running state
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `:wastebasket: **Unarchived** repositories post migration. [View workflow run for details](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })
