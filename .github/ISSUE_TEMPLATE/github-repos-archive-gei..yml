@@ -1,0 +1,15 @@
+name: GHES/GHEC repos to archive before migration to EMU [GEI]
+description: Perform a migration of repos from GHES or GHEC to GitHub using GEI
+title: "GHES/GHEC repos to GitHub migration [GEI]"
+labels: ["archive", "gei"]
+body:
+  - type: textarea
+    id: repositories
+    attributes:
+      label: Repositories
+      description: Please enter the GitHub repositories that you would like to archive before starting the migration
+      placeholder: |
+        your-org/your-repository-1
+        your-org/your-repository-2
+    validations:
+      required: true
