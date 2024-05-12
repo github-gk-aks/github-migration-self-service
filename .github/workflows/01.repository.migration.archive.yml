@@ -32,6 +32,60 @@ jobs:
         env:
           REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
 
+      - name: Post prepare message
+        uses: actions/github-script@v6
+        with:
+          script: |
+            
+            let commentBody
+            let repositories = process.env.REPOSITORIES.trim().split('\n');
+      
+            commentBody = `👋 Thank you for opening this migration issue.
+            
+            The following **${repositories.length} repositories** have been parsed from your issue body:
+
+            \`\`\`
+            ${repositories.join('\n')}
+            \`\`\`
+
+            <details>
+              <summary><b>Troubleshooting</b></summary>
+
+            If the parsed repositories are not matching the repositories listed in your issue body, you can edit the issue body and make sure it's correct. List your repositories in a code block as this one:
+
+            \`\`\`
+            your-org/your-repository-1
+            your-org/your-repository-2
+            \`\`\`
+            </details>
+
+            ## Run the migration
+
+            Open a new issue by choosing the appropriate issue template on the same repository
+            `
+            await github.rest.issues.createComment({
+                issue_number: ${{ github.event.issue.number }},
+                owner: '${{ github.REPOSITORY_OWNER }}',
+                repo: '${{ github.event.repository.name }}',
+                body: commentBody
+            })
+        env:
+          REPOSITORIES: ${{ steps.parse-issue-body.outputs.issueparser_repositories }}
+
+      - name: Post failure message
+        if: ${{ failure() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let commentBody
+            commentBody = `😢 The issue body could not be parsed. Please edit the issue body or open a new issue using an issue template.`
+            await github.rest.issues.createComment({
+              issue_number: ${{ github.event.issue.number }},
+              owner: '${{ github.REPOSITORY_OWNER }}',
+              repo: '${{ github.event.repository.name }}',
+              body: commentBody
+            })
+      
       - name: Archive repositories
         id: archive-repos
         uses: actions/github-script@v7
