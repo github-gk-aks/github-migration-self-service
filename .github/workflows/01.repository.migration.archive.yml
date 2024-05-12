@@ -78,13 +78,14 @@ jobs:
           LABELS: ${{ toJSON(github.event.issue.labels.*.name) }}
 
       - name: Upload Archival report
+        if: always() && steps.archive-repos.outcome == 'failure'
         uses: actions/upload-artifact@v3
         with:
           name: report
           path: report_archival.txt
 
       - name: Update issue with failed archival
-        if: always() && steps.unarchive-repos.outcome == 'failure'
+        if: always() && steps.archive-repos.outcome == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
