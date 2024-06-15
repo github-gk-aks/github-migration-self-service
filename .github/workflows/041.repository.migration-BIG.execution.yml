@@ -229,7 +229,7 @@ jobs:
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
                   #echo "::set-output name=migration-id::$MigrationID" 
-                  echo "migration-id=$MigrationID" >> $GITHUB_OUTPUT"
+                  echo "migration-id=$MigrationID" >> "$GITHUB_OUTPUT"
                   #echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
               }
           }
@@ -280,7 +280,7 @@ jobs:
     steps:
       - name: Check out scripts
         uses: actions/checkout@v4
-        
+
       - uses: actions/download-artifact@v3
         id: download-artifact
         with:
@@ -289,8 +289,8 @@ jobs:
 
       - name: Setup Committer Email and Name
         run: |
-          git config --global user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
-          git config --global user.name ${{ secrets.GIT_COMMITTER_NAME }}
+          git config user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
+          git config user.name ${{ secrets.GIT_COMMITTER_NAME }}
 
       - name: Import GPG key
         run: |
@@ -307,9 +307,9 @@ jobs:
 
       - name: Setup git
         run: |
-          git config --global commit.gpgsign true
-          git config --global user.signingkey $GPG_KEY_ID
-          git config --global gpg.program /tmp/gpg.sh
+          git config commit.gpgsign true
+          git config user.signingkey $GPG_KEY_ID
+          git config gpg.program /tmp/gpg.sh
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
 
