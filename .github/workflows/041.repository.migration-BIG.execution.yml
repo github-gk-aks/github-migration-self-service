@@ -261,7 +261,7 @@ jobs:
         run: |
           reponame="$(basename "${{ matrix.repository }}")"
           migrationid='${{ steps.migrate.outputs.migration-id }}'
-          echo $migrationid
+          echo "Migration id in next step is: $migrationid"
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
           echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${{ github.workspace }}/${reponame}.txt
 
