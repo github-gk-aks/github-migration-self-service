@@ -229,9 +229,8 @@ jobs:
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
                   echo "::set-output name=migration-id::$MigrationID" 
-                  # echo "migration-id=$MigrationID" >> $GITHUB_ENV
+                  # echo "migration-id=$MigrationID" >> "$GITHUB_OUTPUT"
               }
-              echo "Migration id is : $migration-id"
           }
 
           if ($RepoMigrations.count -eq 0) {
@@ -287,31 +286,35 @@ jobs:
           name: statuses
           path: statuses
 
-      - name: Setup Committer Email and Name
-        run: |
-          git config user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
-          git config user.name ${{ secrets.GIT_COMMITTER_NAME }}
+      # - name: Setup Committer Email and Name
+      #   run: |
+      #     git config user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
+      #     git config user.name ${{ secrets.GIT_COMMITTER_NAME }}
+      #   continue-on-error: true
 
-      - name: Import GPG key
-        run: |
-          echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
-        env: 
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      # - name: Import GPG key
+      #   run: |
+      #     echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
+      #   env: 
+      #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      #   continue-on-error: true
 
-      - name: Add the custom gpg signing program that passes the passphrase to the gpg CLI
-        run: |
-          rm -rf /tmp/gpg.sh
-          echo '#!/bin/bash' >> /tmp/gpg.sh
-          echo 'gpg --batch --pinentry-mode=loopback --passphrase $GPG_KEY_PASSPHRASE $@' >> /tmp/gpg.sh
-          chmod +x /tmp/gpg.sh
+      # - name: Add the custom gpg signing program that passes the passphrase to the gpg CLI
+      #   run: |
+      #     rm -rf /tmp/gpg.sh
+      #     echo '#!/bin/bash' >> /tmp/gpg.sh
+      #     echo 'gpg --batch --pinentry-mode=loopback --passphrase $GPG_KEY_PASSPHRASE $@' >> /tmp/gpg.sh
+      #     chmod +x /tmp/gpg.sh
+      #   continue-on-error: true
 
-      - name: Setup git
-        run: |
-          git config commit.gpgsign true
-          git config user.signingkey $GPG_KEY_ID
-          git config gpg.program /tmp/gpg.sh
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      # - name: Setup git
+      #   run: |
+      #     git config commit.gpgsign true
+      #     git config user.signingkey $GPG_KEY_ID
+      #     git config gpg.program /tmp/gpg.sh
+      #   env:
+      #     GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      #   continue-on-error: true
 
       - name: Commit Changes
         run: |
