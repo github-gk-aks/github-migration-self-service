@@ -320,7 +320,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git add .
-            git commit -S -m "Added the migration status files - $(date +"%Y-%m-%d %H:%M:%S")" 
+            git commit -m "Added the migration status files - $(date +"%Y-%m-%d %H:%M:%S")" 
             git push origin main
           else
               echo "There are no changes to commit."
