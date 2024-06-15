@@ -1,4 +1,4 @@
-name: GHES/GHEC repos to GitHub migration [GEI]
+name: GHES/GHEC BIG repos to GitHub migration [GEI]
 description: Perform a migration of BIG repos from GHES or GHEC to GitHub using GEI
 title: "GHES/GHEC BIG repos to GitHub migration [GEI]"
 labels: ["gei","big-migration"]

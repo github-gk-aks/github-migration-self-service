@@ -1,7 +1,7 @@
 name: GHES/GHEC repos to GitHub migration [GEI]
 description: Perform a migration of repos from GHES or GHEC to GitHub using GEI
 title: "GHES/GHEC repos to GitHub migration [GEI]"
-labels: ["migration", "gei","big-migration"]
+labels: ["migration", "gei"]
 body:
   - type: textarea
     id: repositories
