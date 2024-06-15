@@ -230,7 +230,6 @@ jobs:
                   $RepoMigrations[$RepoName] = $MigrationID
                   #echo "::set-output name=migration-id::$MigrationID" 
                   echo "migration-id=$MigrationID" >> "$GITHUB_OUTPUT"
-                  echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
               }
               echo "Migration id is : $MigrationID"
           }
@@ -261,7 +260,7 @@ jobs:
         id: write-status
         run: |
           reponame="$(basename "${{ matrix.repository }}")"
-          migrationid="${{ steps.migrate.outputs.migration-id }}"
+          migrationid="${{ env.migration-id }}"
           echo $migrationid
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
           echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${{ github.workspace }}/${reponame}.txt
