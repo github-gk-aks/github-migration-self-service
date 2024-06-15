@@ -228,9 +228,9 @@ jobs:
               if (!$null -eq $MigrationID) {
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
-                  # echo "::set-output name=migration-id::$MigrationID" 
+                  #echo "::set-output name=migration-id::$MigrationID" 
                   echo "migration-id=$MigrationID" >> $GITHUB_OUTPUT"
-                  echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
+                  #echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
               }
           }
 
@@ -238,16 +238,6 @@ jobs:
               Write-Host "No migrations were started. Exiting..."
               exit 1
           }
-
-          # Write-Host "Queued $($RepoMigrations.count) migration(s). Waiting for them to complete..."
-
-          # foreach ($RepoName in $RepoMigrations.Keys) {
-          #     $MigrationID = $RepoMigrations[$RepoName]
-          #     Write-Host "Waiting for migration of repository $RepoName with ID $MigrationID to complete..."
-
-          #     gei wait-for-migration --migration-id $MigrationID
-          # }
-
         env:
           GH_PAT: ${{ secrets.TARGET_ADMIN_TOKEN }}
           GH_SOURCE_PAT: ${{ secrets.SOURCE_ADMIN_TOKEN }}
@@ -256,51 +246,14 @@ jobs:
           REPO_TORG: ${{ needs.prepare.outputs.target_organization }}
           REPO_REP: ${{ needs.prepare.outputs.repositories }}
 
-      # - name: Generate user mapping file
-      #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
+      # - name: Check if output directory exists
       #   run: |
-      #     gei generate-mannequin-csv                            \
-      #     --output user-mappings-template.csv                   \
-      #     --github-target-org ${{ inputs.TARGET_ORGANIZATION }} \
-      #     --github-target-pat ${{ secrets.TARGET_ADMIN_TOKEN }}
-
-      # - name: Upload user mapping file to artifacts
-      #   if: ${{ contains(github.event.comment.body, 'dry-run') }}
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: user-mappings-template.csv
-      #     path: ./user-mappings-template.csv
-      #     if-no-files-found: error
-      #     retention-days: 30
-
-      # TODO: if you can, automatically map the mannequins to the correct users
-
-      # - name: Reclaim mannequins
-      #   run: |
-      #     gei reclaim-mannequin \
-      #       --csv user-mappings-gei.csv \
-      #       --github-target-org ${{ inputs.TARGET_ORGANIZATION }} \
-      #       --github-target-pat ${{ secrets.TARGET_ADMIN_TOKEN }}
-
-      # - name: Set target repo visibility
-      #   if: fromJson(needs.prepare.outputs.parsed-issue).target_repository_visibility == 'Mirror'
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       const organization = process.env.TARGET_ORGANIZATION;
-      #       await require('./.github/scripts/set-target-repos-visibility.js')({organization});
-      #   env:
-      #     TARGET_ADMIN_TOKEN: ${{ secrets.TARGET_ADMIN_TOKEN }}
-      #     TARGET_ORGANIZATION: ${{ inputs.TARGET_ORGANIZATION }}
-
-      - name: Check if output directory exists
-        run: |
-          if [ ! -d "${{ github.workspace }}/migration-status" ]; then
-            echo "Output directory does not exist. Creating..."
-            mkdir -p "${{ github.workspace }}/migration-status"
-          else
-            echo "Output directory already exists."
-          fi
+      #     if [ ! -d "${{ github.workspace }}/migration-status" ]; then
+      #       echo "Output directory does not exist. Creating..."
+      #       mkdir -p "${{ github.workspace }}/migration-status"
+      #     else
+      #       echo "Output directory already exists."
+      #     fi
 
       - name: Write repo migration status
         if: always()
@@ -308,15 +261,16 @@ jobs:
         run: |
           reponame="$(basename "${{ matrix.repository }}")"
           migrationid="${{ steps.migrate.outputs.migration-id }}"
+          echo $migrationid
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
-          echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${{ github.workspace }}/migration-status/${reponame}.txt
+          echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${{ github.workspace }}/${reponame}.txt
 
       - name: Upload repo migration status
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: statuses
-          path: ${{ github.workspace }}/migration-status/${{ steps.write-status.outputs.repo-name }}.txt
+          path: ${{ github.workspace }}/${{ steps.write-status.outputs.repo-name }}.txt
 
   commit-status-files:
     name: Commit Migration Status Files
@@ -324,11 +278,19 @@ jobs:
     needs: [prepare, migrate]
     if: always()
     steps:
+      - name: Check out scripts
+        uses: actions/checkout@v4
+        
       - uses: actions/download-artifact@v3
         id: download-artifact
         with:
           name: statuses
-          path: ./migration-status/
+          path: statuses
+
+      - name: Setup Committer Email and Name
+        run: |
+          git config --global user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
+          git config --global user.name ${{ secrets.GIT_COMMITTER_NAME }}
 
       - name: Import GPG key
         run: |
@@ -345,8 +307,6 @@ jobs:
 
       - name: Setup git
         run: |
-          git config --global user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
-          git config --global user.name ${{ secrets.GIT_COMMITTER_NAME }}
           git config --global commit.gpgsign true
           git config --global user.signingkey $GPG_KEY_ID
           git config --global gpg.program /tmp/gpg.sh
