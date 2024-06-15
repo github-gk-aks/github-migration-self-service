@@ -279,6 +279,8 @@ jobs:
     steps:
       - name: Check out scripts
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GK_PAT }}
 
       - uses: actions/download-artifact@v3
         id: download-artifact
