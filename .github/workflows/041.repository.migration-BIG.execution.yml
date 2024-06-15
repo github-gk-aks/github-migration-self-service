@@ -230,8 +230,9 @@ jobs:
                   $RepoMigrations[$RepoName] = $MigrationID
                   #echo "::set-output name=migration-id::$MigrationID" 
                   echo "migration-id=$MigrationID" >> "$GITHUB_OUTPUT"
-                  #echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
+                  echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
               }
+              echo "Migration id is : $MigrationID"
           }
 
           if ($RepoMigrations.count -eq 0) {
