@@ -308,20 +308,20 @@ jobs:
           reponame="$(basename "${{ matrix.repository }}")"
           migrationid="${{ steps.migrate.outputs.migration-id }}"
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
-          echo "${{ matrix.repository }}, $migrationid" > ${{ github.workspace }}/migration-status/${reponame}.txt
+          echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${{ github.workspace }}/migration-status/${reponame}.txt
 
       - name: Upload repo migration status
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: statuses
-          path: ${{ steps.write-status.outputs.repo-name }}.txt
+          path: ${{ github.workspace }}/migration-status/${{ steps.write-status.outputs.repo-name }}.txt
 
   commit-status-files:
     name: Commit Migration Status Files
     runs-on: ubuntu-latest
     needs: [prepare, migrate]
-    if: success()
+    # if: always()
     steps:
       - uses: actions/download-artifact@v3
         id: download-artifact
