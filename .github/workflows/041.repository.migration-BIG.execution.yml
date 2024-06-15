@@ -228,8 +228,8 @@ jobs:
               if (!$null -eq $MigrationID) {
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
-                  #echo "::set-output name=migration-id::$MigrationID" 
-                  echo "migration-id=$MigrationID" >> $GITHUB_ENV
+                  echo "::set-output name=migration-id::$MigrationID" 
+                  # echo "migration-id=$MigrationID" >> $GITHUB_ENV
               }
               echo "Migration id is : $migration-id"
           }
@@ -260,12 +260,9 @@ jobs:
         id: write-status
         run: |
           reponame="$(basename "${{ matrix.repository }}")"
-          migration-id=$migration-id
-          echo "Migration id in next step is: $migration-id"
+          migrationid="${{ steps.migrate.outputs.migration-id }}"
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
-          echo "${{ matrix.repository }}, ${{ job.status }}, $migration-id" > ${{ github.workspace }}/${reponame}.txt
-        env:
-            migration-id: ${{ env.migration-id }}
+          echo "${{ matrix.repository }}, ${{ job.status }}, $migrationid" > ${{ github.workspace }}/${reponame}.txt
 
 
       - name: Upload repo migration status
