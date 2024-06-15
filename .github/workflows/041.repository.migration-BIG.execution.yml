@@ -228,8 +228,8 @@ jobs:
               if (!$null -eq $MigrationID) {
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
-                  #echo "::set-output name=migration-id::$MigrationID" 
-                  echo "migration-id=$MigrationID" >> $GITHUB_OUTPUT
+                  echo "::set-output name=migration-id::$MigrationID" 
+                  #echo "migration-id=$MigrationID" >> $GITHUB_OUTPUT
               }
           }
 
@@ -321,7 +321,7 @@ jobs:
     name: Commit Migration Status Files
     runs-on: ubuntu-latest
     needs: [prepare, migrate]
-    # if: always()
+    if: always()
     steps:
       - uses: actions/download-artifact@v3
         id: download-artifact
@@ -361,6 +361,8 @@ jobs:
           else
               echo "There are no changes to commit."
           fi
+        env:
+          GPG_KEY_PASSPHRASE: ${{ secrets.PASSPHRASE }}
 
   # report-failure:
   #   name: Report Failure
