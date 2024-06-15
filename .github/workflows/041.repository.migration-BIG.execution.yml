@@ -319,6 +319,8 @@ jobs:
       - name: Commit Changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
+            git config user.email "gaurav3007@gmail.com"
+            git config user.name "gaurav3007"
             git add .
             git commit -m "Added the migration status files - $(date +"%Y-%m-%d %H:%M:%S")" 
             git push origin main
