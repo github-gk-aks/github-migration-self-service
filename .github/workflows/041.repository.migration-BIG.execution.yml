@@ -229,9 +229,9 @@ jobs:
                   Write-Host "Queued migration of repository $RepoName with ID $MigrationID"
                   $RepoMigrations[$RepoName] = $MigrationID
                   #echo "::set-output name=migration-id::$MigrationID" 
-                  echo "migrationid=$MigrationID" >> $GITHUB_OUTPUT
+                  echo "migration-id=$MigrationID" >> $GITHUB_ENV
               }
-              echo "Migration id is : $migrationid"
+              echo "Migration id is : $migration-id"
           }
 
           if ($RepoMigrations.count -eq 0) {
@@ -260,10 +260,13 @@ jobs:
         id: write-status
         run: |
           reponame="$(basename "${{ matrix.repository }}")"
-          # migrationid='${{ steps.migrate.outputs.migrationid }}'
-          echo "Migration id in next step is: ${{ steps.migrate.outputs.migrationid }}"
+          migration-id=$migration-id
+          echo "Migration id in next step is: $migration-id"
           echo "repo-name=$reponame" >> "$GITHUB_OUTPUT"
-          echo "${{ matrix.repository }}, ${{ job.status }}, ${{ steps.migrate.outputs.migrationid }}" > ${{ github.workspace }}/${reponame}.txt
+          echo "${{ matrix.repository }}, ${{ job.status }}, $migration-id" > ${{ github.workspace }}/${reponame}.txt
+        env:
+            migration-id: ${{ env.migration-id }}
+
 
       - name: Upload repo migration status
         uses: actions/upload-artifact@v3
