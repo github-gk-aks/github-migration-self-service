@@ -10,9 +10,9 @@ on:
     #   GK_PAT:
     #     required: true
 
-# permissions:
-#   contents: read
-#   issues: write
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   prepare:

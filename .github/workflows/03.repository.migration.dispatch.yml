@@ -1,4 +1,4 @@
-name: Repository Migration between GitHub organizations [GEI]
+name: Repository Migration between GitHub Clouds [GEI]
 
 on:
   issue_comment:
