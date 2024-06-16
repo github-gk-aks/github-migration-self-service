@@ -2,13 +2,13 @@ name: GitHub Repository Migration
 
 on:
   workflow_call:
-    secrets:
-      TARGET_ADMIN_TOKEN:
-        required: true
-      SOURCE_ADMIN_TOKEN:
-        required: true
-      GK_PAT:
-        required: true
+    # secrets:
+    #   TARGET_ADMIN_TOKEN:
+    #     required: true
+    #   SOURCE_ADMIN_TOKEN:
+    #     required: true
+    #   GK_PAT:
+    #     required: true
 
 # permissions:
 #   contents: read
