@@ -290,7 +290,7 @@ jobs:
         id: download-artifact
         with:
           name: statuses
-          path: statuses
+          path: migration-status
 
       - name: Setup Committer Email and Name
         run: |
