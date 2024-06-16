@@ -17,3 +17,4 @@ jobs:
     secrets:
       TARGET_ADMIN_TOKEN: ${{ secrets.TARGET_ADMIN_TOKEN }}
       SOURCE_ADMIN_TOKEN: ${{ secrets.SOURCE_ADMIN_TOKEN }}
+      GK_PAT: ${{ secrets.GK_PAT }}
