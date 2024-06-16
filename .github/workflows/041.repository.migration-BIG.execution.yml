@@ -8,9 +8,9 @@ on:
       SOURCE_ADMIN_TOKEN:
         required: true
 
-permissions:
-  contents: read
-  issues: write
+# permissions:
+#   contents: read
+#   issues: write
 
 jobs:
   prepare:
@@ -288,41 +288,41 @@ jobs:
           name: statuses
           path: statuses
 
-      # - name: Setup Committer Email and Name
-      #   run: |
-      #     git config user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
-      #     git config user.name ${{ secrets.GIT_COMMITTER_NAME }}
-      #   continue-on-error: true
+      - name: Setup Committer Email and Name
+        run: |
+          git config user.email ${{ secrets.GIT_COMMITTER_EMAIL }}
+          git config user.name ${{ secrets.GIT_COMMITTER_NAME }}
+        continue-on-error: true
 
-      # - name: Import GPG key
-      #   run: |
-      #     echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
-      #   env: 
-      #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      #   continue-on-error: true
+      - name: Import GPG key
+        run: |
+          echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
+        env: 
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        continue-on-error: true
 
-      # - name: Add the custom gpg signing program that passes the passphrase to the gpg CLI
-      #   run: |
-      #     rm -rf /tmp/gpg.sh
-      #     echo '#!/bin/bash' >> /tmp/gpg.sh
-      #     echo 'gpg --batch --pinentry-mode=loopback --passphrase $GPG_KEY_PASSPHRASE $@' >> /tmp/gpg.sh
-      #     chmod +x /tmp/gpg.sh
-      #   continue-on-error: true
+      - name: Add the custom gpg signing program that passes the passphrase to the gpg CLI
+        run: |
+          rm -rf /tmp/gpg.sh
+          echo '#!/bin/bash' >> /tmp/gpg.sh
+          echo 'gpg --batch --pinentry-mode=loopback --passphrase $GPG_KEY_PASSPHRASE $@' >> /tmp/gpg.sh
+          chmod +x /tmp/gpg.sh
+        continue-on-error: true
 
-      # - name: Setup git
-      #   run: |
-      #     git config commit.gpgsign true
-      #     git config user.signingkey $GPG_KEY_ID
-      #     git config gpg.program /tmp/gpg.sh
-      #   env:
-      #     GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-      #   continue-on-error: true
+      - name: Setup git
+        run: |
+          git config commit.gpgsign true
+          git config user.signingkey $GPG_KEY_ID
+          git config gpg.program /tmp/gpg.sh
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        continue-on-error: true
 
       - name: Commit Changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            git config user.email "gaurav3007@gmail.com"
-            git config user.name "gaurav3007"
+            # git config user.email "gaurav3007@gmail.com"
+            # git config user.name "gaurav3007"
             git add .
             git commit -m "Added the migration status files - $(date +"%Y-%m-%d %H:%M:%S")" 
             git push origin main
