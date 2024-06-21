@@ -111,7 +111,7 @@ jobs:
                   const response = await github.rest.repos.update({
                     owner: sourceOrg,
                     repo: repoName,
-                    archived: true
+                    archived: false
                   });
                   if (response.status === 200) {
                     report += `${repoName} archival successful\n`;
@@ -138,7 +138,7 @@ jobs:
           LABELS: ${{ toJSON(github.event.issue.labels.*.name) }}
 
       - name: Upload Archival report
-        if: always() && steps.archive-repos.outcome == 'failure'
+        if: always() && steps.archive-repos.outcome == 'success'
         uses: actions/upload-artifact@v3
         with:
           name: report
