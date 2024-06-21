@@ -117,7 +117,7 @@ jobs:
           "$repoName, $migrationId, $finalStatus" | Out-File -FilePath $StatusReportPath -Append
         } else {
           # Log a message if the migration status file is not found
-          "$repoName, No migration status file found" | Out-File -FilePath $StatusReportPath -Append
+          "$repoName, Either the migration has not started for the repo or there is no migration status file found" | Out-File -FilePath $StatusReportPath -Append
         }
       env:
         GH_PAT: ${{ secrets.TARGET_ADMIN_TOKEN }}

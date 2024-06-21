@@ -98,14 +98,11 @@ jobs:
             let isfailed = false;
             let report = '';
 
-            // Function to introduce delay
-            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-            for (const sourceRepo of repositories) {
+            await Promise.all(repositories.map(async (sourceRepo) => {
               if (sourceRepo) {
                 let [sourceOrg, repoName] = sourceRepo.split('/');
                 repoName = repoName.trim();
-
+                
                 core.info(`Archiving ${sourceOrg}/${repoName}`);
                 try {
                   const response = await github.rest.repos.update({
@@ -113,7 +110,7 @@ jobs:
                     repo: repoName,
                     archived: true
                   });
-                  if (response.status === 200) {
+                  if (response.status == 200) {
                     report += `${repoName} archival successful\n`;
                   } else {
                     report += `${repoName} archival unsuccessful\n`;
@@ -124,11 +121,8 @@ jobs:
                   core.error(`Failed to archive ${sourceOrg}/${repoName}: ${error.message}`);
                   isfailed = true;
                 }
-
-                // Delay for 2 seconds between requests to avoid rate limiting
-                await delay(2000);
               }
-            }
+            }));
             fs.writeFileSync('report_archival.txt', report);
             if (isfailed) {
               core.setFailed('Failed to archive one or more repositories');
